@@ -1,4 +1,7 @@
-## Coding challenge
+[![Build Status](https://api.travis-ci.com/krandhir/kalahonline.svg?branch=main)](https://travis-ci.com/krandhir/kalahonline)
+[![codecov](https://codecov.io/gh/krandhir/kalahonline/branch/main/graph/badge.svg?token=MbDdfa21zs)](https://codecov.io/gh/krandhir/kalahonline)
+
+## Game of six stone kalah
 
 #### The Goal
 Create a *Java RESTful Web Service* that runs a game of 6-stone Kalah. The general rules
@@ -48,10 +51,12 @@ Created the project using <https://start.spring.io/>
 ## Built With
 
 * Java - Programming language
-* [Spring Boot](https://projects.spring.io/spring-boot/) - 
+* [Spring Boot](https://projects.spring.io/spring-boot/) - Framework
 * [Maven](https://maven.apache.org) - To manage the dependencies
 * [JUnit5](https://junit.org/junit5/) - Unit test framework
 * [Swagger](https://swagger.io) - Used to generate API docs & UI
+
+Note: KGC - Kalah Game company
 
 ## Author
 
