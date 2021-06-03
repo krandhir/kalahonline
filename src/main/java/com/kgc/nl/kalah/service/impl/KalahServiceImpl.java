@@ -38,6 +38,7 @@ public class KalahServiceImpl implements IKalahService {
    */
   @Override
   public Game play(final String gameId, final Integer pitId) {
+    // retrieve the game from the repository
     final Game game = this.repository.find(gameId);
     distributeStones(game, pitId);
     checkGameOver(game);
@@ -50,22 +51,38 @@ public class KalahServiceImpl implements IKalahService {
         .forEach(pit -> pit.setStoneCount(0));
   }
 
+  /**
+   * validate the move then distribute the stones and decide the player turn
+   * 
+   * @param game
+   * @param pitId
+   */
   private void distributeStones(final Game game, int pitId) {
     final Pit startPit = game.getBoard().getPit(pitId);
     validateMove(game, pitId);
     int stoneToDistribute = startPit.getStoneCount();
+    // set the stone count to zero after the first move
     startPit.setStoneCount(0);
     while (stoneToDistribute > 0) {
+      // (++pitId) pre-increment to get the immediate pit after the start pit for the stone distribution
       final Pit currentPit = game.getBoard().getPit(++pitId);
       if (currentPit.isDistributable(game.getTurn())) {
+        // increase the stone count by 1
         currentPit.setStoneCount(currentPit.getStoneCount() + 1);
         stoneToDistribute--;
       }
     }
+    // check if the last pit is empty
     lastEmptyPit(game, pitId);
+    // decide if the player will get another turn else next player will get the turn
     decidePlayerTurn(game, pitId);
   }
 
+  /**
+   * Check if the game is over by counting the stones and then reset the board
+   * 
+   * @param game
+   */
   private void checkGameOver(final Game game) {
     final int playerNorthPitStoneCount = game.getBoard().getStoneCount(Player.PLAYER_NORTH, false);
     final int playerSouthPitStoneCount = game.getBoard().getStoneCount(Player.PLAYER_SOUTH, false);
@@ -74,11 +91,18 @@ public class KalahServiceImpl implements IKalahService {
       final Pit houseSouth = game.getBoard().getPit(Player.PLAYER_SOUTH.getPosition());
       houseNorth.setStoneCount(houseNorth.getStoneCount() + playerNorthPitStoneCount);
       houseSouth.setStoneCount(houseSouth.getStoneCount() + playerSouthPitStoneCount);
+      
       determineWinner(game);
+      // reset the board
       resetBoard(game);
     }
   }
 
+  /**
+   * Determine the game winner
+   * 
+   * @param game
+   */
   private void determineWinner(final Game game) {
     final int houseNorthStoneCount = game.getBoard().getStoneCount(Player.PLAYER_NORTH, true);
     final int houseSouthStoneCount = game.getBoard().getStoneCount(Player.PLAYER_SOUTH, true);
@@ -89,6 +113,13 @@ public class KalahServiceImpl implements IKalahService {
     }
   }
 
+  /**
+   * Checks if the last pit in the turn is empty and belongs to the current player also it's not the
+   * Kalah house then the player captures this stone and all the stones from the opposite pit
+   * 
+   * @param game
+   * @param endPitId
+   */
   private void lastEmptyPit(final Game game, final int endPitId) {
     final Pit endPit = game.getBoard().getPit(endPitId);
     if (!endPit.isHouse() && endPit.getOwner().equals(game.getTurn()) && (endPit.getStoneCount() == 1)) {
@@ -102,14 +133,22 @@ public class KalahServiceImpl implements IKalahService {
     }
   }
 
+  /**
+   * Check if the last pit is the players own Kalah. If true then the player will get another turn
+   * 
+   * @param game
+   * @param pitId
+   */
   private void decidePlayerTurn(final Game game, final int pitId) {
     final Pit pit = game.getBoard().getPit(pitId);
+    // if the stone lands in own Kalah then the player will get another turn
     if (pit.isHouse() && Player.PLAYER_NORTH.equals(pit.getOwner()) && Player.PLAYER_NORTH.equals(game.getTurn())) {
       game.setTurn(Player.PLAYER_NORTH);
     } else if (pit.isHouse() && Player.PLAYER_SOUTH.equals(pit.getOwner())
         && Player.PLAYER_SOUTH.equals(game.getTurn())) {
       game.setTurn(Player.PLAYER_SOUTH);
     } else {
+      // not own Kalah, another players turn
       if (Player.PLAYER_NORTH.equals(game.getTurn())) {
         game.setTurn(Player.PLAYER_SOUTH);
       } else {
@@ -118,8 +157,16 @@ public class KalahServiceImpl implements IKalahService {
     }
   }
 
+  /**
+   * This method validates if the move is valid else exception is thrown. And in case if player turn
+   * is not yet decided then sets the turn to pit owner
+   * 
+   * @param game
+   * @param startPitId
+   */
   private void validateMove(final Game game, final int startPitId) {
     final Pit startPit = game.getBoard().getPit(startPitId);
+
     if (startPit.isHouse()) {
       throw new IllegalMoveException("Can not start from house");
     }
@@ -132,6 +179,7 @@ public class KalahServiceImpl implements IKalahService {
     if (startPit.getStoneCount() == 0) {
       throw new IllegalMoveException("Can not start from empty pit");
     }
+    // turn not yet decided
     if (game.getTurn() == null) {
       if (Player.PLAYER_NORTH.equals(startPit.getOwner())) {
         game.setTurn(Player.PLAYER_NORTH);

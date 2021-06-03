@@ -38,6 +38,9 @@ public class Pit {
     }
   }
 
+  /**
+   * @return
+   */
   public int getStoneCount() {
     return this.stoneCount;
   }
@@ -46,11 +49,22 @@ public class Pit {
     this.stoneCount = stoneCount;
   }
 
+  /**
+   * checks if the pit is distributable
+   * 
+   * @param turn
+   * @return
+   */
   public boolean isDistributable(final Player turn) {
     return (!turn.equals(Player.PLAYER_NORTH) || (this.getId() != Player.PLAYER_SOUTH.getPosition()))
         && (!turn.equals(Player.PLAYER_SOUTH) || (this.getId() != Player.PLAYER_NORTH.getPosition()));
   }
 
+  /**
+   * Check if the pit is kalah house
+   * 
+   * @return
+   */
   public boolean isHouse() {
     return (this.getId() == Player.PLAYER_NORTH.getPosition()) || (this.getId() == Player.PLAYER_SOUTH.getPosition());
   }
