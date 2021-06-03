@@ -35,8 +35,9 @@ class KalahExceptionHandlerTest {
   @Test
   void testGameNotFoundException() throws Exception {
     final MockHttpServletRequestBuilder playGameRequest = MockMvcRequestBuilders.put("/games/123/pits/7");
-    this.mockMvc.perform(playGameRequest).andExpect(MockMvcResultMatchers.status().isNotFound())
-        .andExpect(MockMvcResultMatchers.content().string("Could not find game 123")).andReturn();
+    this.mockMvc.perform(playGameRequest).andExpect(MockMvcResultMatchers.status().isNotFound()).andExpect(
+        MockMvcResultMatchers.content().json("{\"message\":\"Could not find game 123\",\"errorCode\":\"NOT_FOUND\"}"))
+        .andReturn();
   }
 
   @Test
@@ -50,6 +51,8 @@ class KalahExceptionHandlerTest {
     final MockHttpServletRequestBuilder playGameRequest =
         MockMvcRequestBuilders.put("/games/" + game.getId() + "/pits/7");
     this.mockMvc.perform(playGameRequest).andExpect(MockMvcResultMatchers.status().isBadRequest())
-        .andExpect(MockMvcResultMatchers.content().string("Illegal move: Can not start from house")).andReturn();
+        .andExpect(MockMvcResultMatchers.content()
+            .json("{\"message\":\"Illegal move: Can not start from house\",\"errorCode\":\"BAD_REQUEST\"}"))
+        .andReturn();
   }
 }

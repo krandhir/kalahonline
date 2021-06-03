@@ -5,6 +5,7 @@ package com.kgc.nl.kalah.controller;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public interface IKalahController {
   @Operation(summary = "Make a move", description = "Call this endpoint to make a move using the gameId and pitId")
   @PutMapping(value = "/games/{gameId}/pits/{pitId}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<KalahResponse> playGame(@PathVariable("gameId") final String gameId,
+  public ResponseEntity<KalahResponse> playGame(@PathVariable("gameId") final @NotBlank String gameId,
       @PathVariable("pitId") final @Min(value = 1) @Max(value = 14) Integer pitId);
 
 }
